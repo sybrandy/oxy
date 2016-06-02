@@ -1,19 +1,23 @@
 package forward
 
 const (
-	XForwardedProto    = "X-Forwarded-Proto"
-	XForwardedFor      = "X-Forwarded-For"
-	XForwardedHost     = "X-Forwarded-Host"
-	XForwardedServer   = "X-Forwarded-Server"
-	Connection         = "Connection"
-	KeepAlive          = "Keep-Alive"
-	ProxyAuthenticate  = "Proxy-Authenticate"
-	ProxyAuthorization = "Proxy-Authorization"
-	Te                 = "Te" // canonicalized version of "TE"
-	Trailers           = "Trailers"
-	TransferEncoding   = "Transfer-Encoding"
-	Upgrade            = "Upgrade"
-	ContentLength      = "Content-Length"
+	XForwardedProto         = "X-Forwarded-Proto"
+	XForwardedFor           = "X-Forwarded-For"
+	XForwardedHost          = "X-Forwarded-Host"
+	XForwardedServer        = "X-Forwarded-Server"
+	Connection              = "Connection"
+	KeepAlive               = "Keep-Alive"
+	ProxyAuthenticate       = "Proxy-Authenticate"
+	ProxyAuthorization      = "Proxy-Authorization"
+	Te                      = "Te" // canonicalized version of "TE"
+	Trailers                = "Trailers"
+	TransferEncoding        = "Transfer-Encoding"
+	Upgrade                 = "Upgrade"
+	ContentLength           = "Content-Length"
+	XForwardedSslClientCert = "X-Forwarded-SSL-Client-Cert"
+	XSslClientSDn           = "X-SSL-Client-S-DN"
+	XSslClientIDn           = "X-SSL-Client-I-DN"
+	XRealIp                 = "X-Real-IP"
 )
 
 // Hop-by-hop headers. These are removed when sent to the backend.
