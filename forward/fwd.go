@@ -74,6 +74,18 @@ func Logger(l utils.Logger) optSetter {
 	}
 }
 
+// ForwardSslCerts sets the htpForwarder.rewriter to the ForwardCertRewriter
+func ForwardSslCerts() optSetter {
+	return func(f *Forwarder) error {
+		h, err := os.Hostname()
+		if err != nil {
+			h = "localhost"
+		}
+		f.httpForwarder.rewriter = &ForwardCertRewriter{TrustForwardHeader: true, Hostname: h}
+		return nil
+	}
+}
+
 // Forwarder wraps two traffic forwarding implementations: HTTP and websockets.
 // It decides based on the specified request which implementation to use
 type Forwarder struct {
