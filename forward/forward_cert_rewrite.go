@@ -1,6 +1,8 @@
 package forward
 
 import (
+	"crypto/x509/pkix"
+	"encoding/pem"
 	"net"
 	"net/http"
 	"strings"
@@ -42,26 +44,52 @@ func (rw *ForwardCertRewriter) Rewrite(req *http.Request) {
 		req.Header.Set(XForwardedServer, rw.Hostname)
 	}
 
-    if req.RemoteAddr != "" {
-        req.Header.Set(XRealIp, strings.Split(req.RemoteAddr, ":")[0])
-    }
+	if req.RemoteAddr != "" {
+		req.Header.Set(XRealIp, strings.Split(req.RemoteAddr, ":")[0])
+	}
 
-    if req.TLS != nil {
-        numCerts := len(req.TLS.PeerCertificates)
-        certs := make([]string, numCerts)
-        subjects := make([]string, numCerts)
-        issuers := make([]string, numCerts)
-        for i, c := range req.TLS.PeerCertificates {
-            certs[i] = strings.Replace(string(c.Raw), "\n", " ", -1)
-            subjects[i] = strings.Replace(string(c.RawSubject), "\n", " ", -1)
-            issuers[i] = strings.Replace(string(c.RawIssuer), "\n", " ", -1)
-        }
-        req.Header.Set(XForwardedSslClientCert, strings.Join(certs, ","))
-        req.Header.Set(XSslClientSDn, strings.Join(subjects, ","))
-        req.Header.Set(XSslClientIDn, strings.Join(issuers, ","))
-    }
+	if req.TLS != nil {
+		c := req.TLS.PeerCertificates[0]
+		block := &pem.Block{
+			Type:  "CERTIFICATE",
+			Bytes: c.Raw,
+		}
+		req.Header.Set(XForwardedSslClientCert,
+			strings.Replace(string(pem.EncodeToMemory(block)), "\n", " ", -1))
+		req.Header.Set(XSslClientSDn, pkixToString(c.Subject))
+		req.Header.Set(XSslClientIDn, pkixToString(c.Issuer))
+	}
 
 	// Remove hop-by-hop headers to the backend.  Especially important is "Connection" because we want a persistent
 	// connection, regardless of what the client sent to us.
 	utils.RemoveHeaders(req.Header, HopHeaders...)
+}
+
+func pkixToString(val pkix.Name) string {
+	var parts []string
+	for _, v := range val.Country {
+		parts = append(parts, "C="+v)
+	}
+	for _, v := range val.Organization {
+		parts = append(parts, "O="+v)
+	}
+	for _, v := range val.OrganizationalUnit {
+		parts = append(parts, "OU="+v)
+	}
+	for _, v := range val.Locality {
+		parts = append(parts, "L="+v)
+	}
+	for _, v := range val.Province {
+		parts = append(parts, "ST="+v)
+	}
+	for _, v := range val.PostalCode {
+		parts = append(parts, "PC="+v)
+	}
+	if val.SerialNumber != "" {
+		parts = append(parts, "SERIALNUMBER="+val.SerialNumber)
+	}
+	if val.CommonName != "" {
+		parts = append(parts, "CN="+val.SerialNumber)
+	}
+	return "/" + strings.Join(parts, "/")
 }
