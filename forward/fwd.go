@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vulcand/oxy/utils"
+	"github.com/containous/oxy/utils"
 )
 
 // ReqRewriter can alter request headers and body
@@ -154,7 +154,9 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, req *http.Request, ctx 
 		return
 	}
 
+	var scheme string = "http"
 	if req.TLS != nil {
+		scheme = "https"
 		ctx.log.Infof("Round trip: %v, code: %v, duration: %v tls:version: %x, tls:resume:%t, tls:csuite:%x, tls:server:%v",
 			req.URL, response.StatusCode, time.Now().UTC().Sub(start),
 			req.TLS.Version,
@@ -169,6 +171,7 @@ func (f *httpForwarder) serveHTTP(w http.ResponseWriter, req *http.Request, ctx 
 	utils.CopyHeaders(w.Header(), response.Header)
 	// Remove hop-by-hop headers.
 	utils.RemoveHeaders(w.Header(), HopHeaders...)
+	utils.RewriteLocation(w.Header(), scheme, req.Host)
 	w.WriteHeader(response.StatusCode)
 	_, err = io.Copy(w, response.Body)
 	defer response.Body.Close()

@@ -119,3 +119,18 @@ func RemoveHeaders(headers http.Header, names ...string) {
 		headers.Del(h)
 	}
 }
+
+// Rewrite the Location header.
+func RewriteLocation(headers http.Header, scheme string, host string) {
+	currLoc := headers.Get("Location")
+	if currLoc != "" {
+		currUrl, err := url.Parse(currLoc)
+		if err != nil {
+			currUrl = &url.URL{}
+		}
+
+		currUrl.Scheme = scheme
+		currUrl.Host = host
+		headers.Set("Location", currUrl.String())
+	}
+}
