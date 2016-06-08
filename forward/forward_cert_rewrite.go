@@ -48,7 +48,9 @@ func (rw *ForwardCertRewriter) Rewrite(req *http.Request) {
 		req.Header.Set(XRealIp, strings.Split(req.RemoteAddr, ":")[0])
 	}
 
-	if req.TLS != nil {
+	// OPTIONS requests do not use authorization, therefore do not pass the
+	// headers along.
+	if req.Method != "OPTIONS" && req.TLS != nil {
 		c := req.TLS.PeerCertificates[0]
 		block := &pem.Block{
 			Type:  "CERTIFICATE",
