@@ -17,8 +17,9 @@ func (a nilAuth) Authorize(w http.ResponseWriter, req *http.Request) bool {
 	return false
 }
 
-var auths = map[string]func(config []byte) Auth{
+var auths = map[string]func(config []byte) (Auth, error){
 	"default": NewDefaultAuth,
+	"basic":   NewBasicAuth,
 }
 
 func New(authtype string, config []byte) (Auth, error) {
@@ -26,5 +27,6 @@ func New(authtype string, config []byte) (Auth, error) {
 	if !ok {
 		return nilAuth{}, errors.New(authtype + " is not a valid authorization module.")
 	}
-	return auth(config), nil
+	currAuth, err := auth(config)
+	return currAuth, err
 }
