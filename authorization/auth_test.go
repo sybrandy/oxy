@@ -9,21 +9,21 @@ import (
 )
 
 func TestInvalidAuth(t *testing.T) {
-	_, err := New("invalid", []byte{})
+	_, err := New("invalid", "test_configs/realmonly.json")
 	if err == nil {
 		t.Error("No error reported for an invalid authorization module.")
 	}
 }
 
 func TestDefaultAuth(t *testing.T) {
-	auth, err := New("default", []byte{})
+	auth, err := New("default", "test_configs/realmonly.json")
 	if err != nil {
 		t.Error("Got an error instantiating the default authorization module.")
 	}
 	if !auth.Authorize(&httptest.ResponseRecorder{}, nil) {
 		t.Error("Expected a 'true' from the default Authorize method.")
 	}
-	auth, err = New("", []byte{})
+	auth, err = New("", "test_configs/realmonly.json")
 	if err != nil {
 		t.Error("Got an error instantiating the default authorization module.")
 	}
@@ -33,7 +33,7 @@ func TestDefaultAuth(t *testing.T) {
 }
 
 func TestBasicAuthNoHeader(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -55,7 +55,7 @@ func TestBasicAuthNoHeader(t *testing.T) {
 }
 
 func TestBasicAuthWrongHeader(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -82,7 +82,7 @@ func TestBasicAuthWrongHeader(t *testing.T) {
 }
 
 func TestBasicAuthInvalidPayload(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -109,7 +109,7 @@ func TestBasicAuthInvalidPayload(t *testing.T) {
 }
 
 func TestBasicAuthInvalidPayloadOnePart(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -136,7 +136,7 @@ func TestBasicAuthInvalidPayloadOnePart(t *testing.T) {
 }
 
 func TestBasicAuthInvalidPayloadNoPassword(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -163,7 +163,7 @@ func TestBasicAuthInvalidPayloadNoPassword(t *testing.T) {
 }
 
 func TestBasicAuthInvalidPayloadNoUser(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\"}"))
+	auth, err := New("basic", "test_configs/realmonly.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -190,7 +190,7 @@ func TestBasicAuthInvalidPayloadNoUser(t *testing.T) {
 }
 
 func TestBasicAuthValidUser(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\",\"Users\":{\"foo\":\"bar\"}}"))
+	auth, err := New("basic", "test_configs/valid.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -206,7 +206,7 @@ func TestBasicAuthValidUser(t *testing.T) {
 }
 
 func TestBasicAuthInvalidUser(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\",\"Users\":{\"foo\":\"bar\"}}"))
+	auth, err := New("basic", "test_configs/valid.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}
@@ -233,7 +233,7 @@ func TestBasicAuthInvalidUser(t *testing.T) {
 }
 
 func TestBasicAuthInvalidPassword(t *testing.T) {
-	auth, err := New("basic", []byte("{\"realm\":\"Foo\",\"Users\":{\"foo\":\"bar\"}}"))
+	auth, err := New("basic", "test_configs/valid.json")
 	if err != nil {
 		t.Errorf("Got an error instantiating the basic authorization module: %s", err)
 	}

@@ -3,6 +3,7 @@ package authorization
 
 import (
 	"errors"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ var auths = map[string]func(config []byte) (Auth, error){
 	"basic":   NewBasicAuth,
 }
 
-func New(authtype string, config []byte) (Auth, error) {
+func New(authtype string, config string) (Auth, error) {
 	if authtype == "" {
 		authtype = "default"
 	}
@@ -30,6 +31,11 @@ func New(authtype string, config []byte) (Auth, error) {
 	if !ok {
 		return nilAuth{}, errors.New(authtype + " is not a valid authorization module.")
 	}
-	currAuth, err := auth(config)
+
+	data, err := ioutil.ReadFile(config)
+	if err != nil {
+		return nilAuth{}, err
+	}
+	currAuth, err := auth(data)
 	return currAuth, err
 }

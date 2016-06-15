@@ -91,7 +91,7 @@ func ForwardSslCerts() optSetter {
 func Authorization(authType string, config string) optSetter {
 	return func(f *Forwarder) error {
 		var err error
-		f.httpForwarder.auth, err = authorization.New(authType, []byte(config))
+		f.httpForwarder.auth, err = authorization.New(authType, config)
 		return err
 	}
 }
