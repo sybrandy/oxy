@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/containus/oxy/authorization"
 	"github.com/vulcand/oxy/utils"
 )
 
@@ -83,6 +84,15 @@ func ForwardSslCerts() optSetter {
 		}
 		f.httpForwarder.rewriter = &ForwardCertRewriter{TrustForwardHeader: true, Hostname: h}
 		return nil
+	}
+}
+
+// Authorization sets the authorization method for the fowarder
+func Authorization(authType string, config string) optSetter {
+	return func(f *Forwarder) error {
+		var err error
+		f.httpForwarder.auth, err = authorization.New(authType, []byte(config))
+		return err
 	}
 }
 

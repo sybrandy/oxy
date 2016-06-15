@@ -4,6 +4,7 @@ package authorization
 import (
 	"encoding/base64"
 	"encoding/json"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -34,13 +35,13 @@ func (a BasicAuth) Authorize(w http.ResponseWriter, req *http.Request) bool {
 
 	payload, err := base64.StdEncoding.DecodeString(parts[1])
 	if err != nil {
-		// TODO: Log the error here
+		log.Printf("Error decoding the config: %s\n", err)
 		return returnUnauthorized(w, a.Realm)
 	}
 
 	credentials := strings.SplitN(string(payload), ":", 2)
 	if len(credentials) != 2 || credentials[0] == "" || credentials[1] == "" {
-		// TODO: Log the error here
+		log.Printf("Invalid credentials provided by the client: %+v\n", credentials)
 		return returnUnauthorized(w, a.Realm)
 	}
 
