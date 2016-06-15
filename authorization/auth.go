@@ -23,6 +23,9 @@ var auths = map[string]func(config []byte) (Auth, error){
 }
 
 func New(authtype string, config []byte) (Auth, error) {
+	if authtype == "" {
+		authtype = "default"
+	}
 	auth, ok := auths[authtype]
 	if !ok {
 		return nilAuth{}, errors.New(authtype + " is not a valid authorization module.")

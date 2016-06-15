@@ -23,6 +23,13 @@ func TestDefaultAuth(t *testing.T) {
 	if !auth.Authorize(&httptest.ResponseRecorder{}, nil) {
 		t.Error("Expected a 'true' from the default Authorize method.")
 	}
+	auth, err = New("", []byte{})
+	if err != nil {
+		t.Error("Got an error instantiating the default authorization module.")
+	}
+	if !auth.Authorize(&httptest.ResponseRecorder{}, nil) {
+		t.Error("Expected a 'true' from the default Authorize method.")
+	}
 }
 
 func TestBasicAuthNoHeader(t *testing.T) {
