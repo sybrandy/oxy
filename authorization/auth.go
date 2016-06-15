@@ -32,9 +32,16 @@ func New(authtype string, config string) (Auth, error) {
 		return nilAuth{}, errors.New(authtype + " is not a valid authorization module.")
 	}
 
-	data, err := ioutil.ReadFile(config)
-	if err != nil {
-		return nilAuth{}, err
+	var data []byte
+	var err error
+	if authtype != "default" {
+		if config == "" {
+			return nilAuth{}, errors.New("No config file was specified for " + authtype + " authentication.")
+		}
+		data, err = ioutil.ReadFile(config)
+		if err != nil {
+			return nilAuth{}, err
+		}
 	}
 	currAuth, err := auth(data)
 	return currAuth, err

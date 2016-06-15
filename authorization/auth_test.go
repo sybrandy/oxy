@@ -16,7 +16,7 @@ func TestInvalidAuth(t *testing.T) {
 }
 
 func TestDefaultAuth(t *testing.T) {
-	auth, err := New("default", "test_configs/realmonly.json")
+	auth, err := New("default", "")
 	if err != nil {
 		t.Error("Got an error instantiating the default authorization module.")
 	}
@@ -29,6 +29,13 @@ func TestDefaultAuth(t *testing.T) {
 	}
 	if !auth.Authorize(&httptest.ResponseRecorder{}, nil) {
 		t.Error("Expected a 'true' from the default Authorize method.")
+	}
+}
+
+func TestBasicAuthNoconfig(t *testing.T) {
+	_, err := New("basic", "")
+	if err == nil {
+		t.Error("Expected an error due to there not being a config file specified.")
 	}
 }
 
