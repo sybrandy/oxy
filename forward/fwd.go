@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containus/oxy/authorization"
+	"github.com/containous/oxy/authorization"
 	"github.com/vulcand/oxy/utils"
 )
 
@@ -90,6 +90,7 @@ func ForwardSslCerts() optSetter {
 // Authorization sets the authorization method for the fowarder
 func Authorization(authType string, config string) optSetter {
 	return func(f *Forwarder) error {
+        log.Printf("Setting up authorization: %s\n", authType)
 		var err error
 		f.httpForwarder.auth, err = authorization.New(authType, config)
 		return err
@@ -116,6 +117,7 @@ type httpForwarder struct {
 	roundTripper http.RoundTripper
 	rewriter     ReqRewriter
 	passHost     bool
+    auth         authorization.Auth
 }
 
 // websocketForwarder is a handler that can reverse proxy
@@ -168,6 +170,9 @@ func (f *Forwarder) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 // serveHTTP forwards HTTP traffic using the configured transport
 func (f *httpForwarder) serveHTTP(w http.ResponseWriter, req *http.Request, ctx *handlerContext) {
+    if !f.auth.Authorize(w, req) {
+        return
+    }
 	start := time.Now().UTC()
 	response, err := f.roundTripper.RoundTrip(f.copyRequest(req, req.URL))
 	if err != nil {
