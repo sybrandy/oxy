@@ -91,7 +91,7 @@ func pkixToString(val pkix.Name) string {
 		parts = append(parts, "SERIALNUMBER="+val.SerialNumber)
 	}
 	if val.CommonName != "" {
-		parts = append(parts, "CN="+val.SerialNumber)
+		parts = append(parts, "CN="+val.CommonName)
 	}
 	return "/" + strings.Join(parts, "/")
 }
