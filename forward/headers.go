@@ -14,9 +14,9 @@ const (
 	TransferEncoding        = "Transfer-Encoding"
 	Upgrade                 = "Upgrade"
 	ContentLength           = "Content-Length"
-	XForwardedSslClientCert = "X-Forwarded-SSL-Client-Cert"
-	XSslClientSDn           = "X-SSL-Client-S-DN"
-	XSslClientIDn           = "X-SSL-Client-I-DN"
+	XForwardedSslClientCert = "X-Forwarded-Ssl-Client-Cert"
+	XSslClientSDn           = "X-Ssl-Client-S-Dn"
+	XSslClientIDn           = "X-Ssl-Client-I-Dn"
 	XRealIp                 = "X-Real-IP"
 )
 

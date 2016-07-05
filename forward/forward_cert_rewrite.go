@@ -17,35 +17,40 @@ type ForwardCertRewriter struct {
 }
 
 func (rw *ForwardCertRewriter) Rewrite(req *http.Request) {
+    if !rw.TrustForwardHeader {
+        req.Header.Del(XForwardedFor)
+        req.Header.Del(XForwardedProto)
+        req.Header.Del(XForwardedHost)
+    }
+
+    // By default, remove all Cert=related headers
+    req.Header.Del(XForwardedSslClientCert)
+    req.Header.Del(XSslClientSDn)
+    req.Header.Del(XSslClientIDn)
+
 	if clientIP, _, err := net.SplitHostPort(req.RemoteAddr); err == nil {
-		if rw.TrustForwardHeader {
-			if prior, ok := req.Header[XForwardedFor]; ok {
-				clientIP = strings.Join(prior, ", ") + ", " + clientIP
-			}
-		}
-		req.Header.Set(XForwardedFor, clientIP)
+        if req.Header.Get(XForwardedFor) == "" {
+            req.Header.Set(XForwardedFor, clientIP)
+        }
+		req.Header.Set(XRealIp, clientIP)
 	}
 
-	if xfp := req.Header.Get(XForwardedProto); xfp != "" && rw.TrustForwardHeader {
-		req.Header.Set(XForwardedProto, xfp)
-	} else if req.TLS != nil {
-		req.Header.Set(XForwardedProto, "https")
-	} else {
-		req.Header.Set(XForwardedProto, "http")
+	if req.Header.Get(XForwardedProto) == ""{
+	    if req.TLS != nil {
+            req.Header.Set(XForwardedProto, "https")
+        } else {
+            req.Header.Set(XForwardedProto, "http")
+        }
 	}
 
-	if xfh := req.Header.Get(XForwardedHost); xfh != "" && rw.TrustForwardHeader {
-		req.Header.Set(XForwardedHost, xfh)
-	} else if req.Host != "" {
-		req.Header.Set(XForwardedHost, req.Host)
+	if req.Header.Get(XForwardedHost) == "" {
+        if req.Host != "" {
+            req.Header.Set(XForwardedHost, req.Host)
+        }
 	}
 
 	if rw.Hostname != "" {
 		req.Header.Set(XForwardedServer, rw.Hostname)
-	}
-
-	if req.RemoteAddr != "" {
-		req.Header.Set(XRealIp, strings.Split(req.RemoteAddr, ":")[0])
 	}
 
 	// OPTIONS requests do not use authorization, therefore do not pass the
