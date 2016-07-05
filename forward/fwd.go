@@ -6,6 +6,7 @@ package forward
 import (
 	"crypto/tls"
 	"io"
+    "log"
 	"net"
 	"net/http"
 	"net/url"
@@ -136,6 +137,7 @@ func New(setters ...optSetter) (*Forwarder, error) {
 	}
 	for _, s := range setters {
 		if err := s(f); err != nil {
+            log.Printf("Got an error with a setter: %s\n", err)
 			return nil, err
 		}
 	}
