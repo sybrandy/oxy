@@ -55,7 +55,7 @@ func (rw *ForwardCertRewriter) Rewrite(req *http.Request) {
 
 	// OPTIONS requests do not use authorization, therefore do not pass the
 	// headers along.
-	if strings.ToUpper(req.Method) != "OPTIONS" && req.TLS != nil {
+	if strings.ToUpper(req.Method) != "OPTIONS" && req.TLS != nil && len(req.TLS.PeerCertificates) > 0 {
 		c := req.TLS.PeerCertificates[0]
 		block := &pem.Block{
 			Type:  "CERTIFICATE",
